@@ -24,6 +24,7 @@ LINK_DIRECTORIES(
 
 SET(SRC_SRCS
   ftp_client.cpp
+  log_opr.cpp
 )
 
 # shared library
