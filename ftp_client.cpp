@@ -35,7 +35,7 @@ CFTPManager::~CFTPManager(void)
 }
 
 FTP_API CFTPManager::login2Server(const std::string &serverIP)
-{
+{   trace_worker();
 	std::string strPort;
 	int pos = serverIP.find_first_of(":");
 
@@ -67,7 +67,7 @@ FTP_API CFTPManager::login2Server(const std::string &serverIP)
 }
 
 FTP_API CFTPManager::inputUserName(const std::string &userName)
-{
+{   trace_worker();
 	std::string strCommandLine = parseCommand(FTP_COMMAND_USERNAME, userName);
 
 	m_strUserName = userName;
@@ -84,7 +84,7 @@ FTP_API CFTPManager::inputUserName(const std::string &userName)
 }
 
 FTP_API CFTPManager::inputPassWord(const std::string &password)
-{
+{   trace_worker();
 	std::string strCmdLine = parseCommand(FTP_COMMAND_PASSWORD, password);
 
 	m_strPassWord = password;
@@ -166,15 +166,15 @@ FTP_API CFTPManager::setTransferMode(type mode)
 
 
 const std::string CFTPManager::Pasv()
-{
+{   trace_worker();
 	std::string strCmdLine = parseCommand(FTP_COMMAND_PSAV_MODE, "");
 
 	if (Send(m_cmdSocket, strCmdLine.c_str()) < 0)
-	{
+	{   trace_printf("NULL");
 		return "";
 	}
 	else
-	{
+	{   trace_printf("NULL");
 		m_strResponse = serverResponse(m_cmdSocket);
 
 		return m_strResponse;
@@ -341,6 +341,8 @@ FTP_API CFTPManager::Get(const std::string &strRemoteFile, const std::string &st
 
 FTP_API CFTPManager::Put(const std::string &strRemoteFile, const std::string &strLocalFile)
 {   trace_worker();
+    trace_printf("strRemoteFile.c_str()  %s", strRemoteFile.c_str());
+    trace_printf("strLocalFile.c_str()  %s", strLocalFile.c_str());
 	std::string strCmdLine;
 	const unsigned long dataLen = FTP_DEFAULT_BUFFER;
 	char strBuf[dataLen] = {0};
@@ -358,25 +360,25 @@ FTP_API CFTPManager::Put(const std::string &strRemoteFile, const std::string &st
 	assert(data_fd != -1);
 
 	if (createDataLink(data_fd) < 0)
-	{
+	{   trace_printf("NULL");
 		return -1;
 	}
 	
 	if (nSize == -1)
-	{
+	{   trace_printf("NULL");
 		strCmdLine = parseCommand(FTP_COMMAND_UPLOAD_FILE, strRemoteFile);
 	}
 	else
-	{
+	{   trace_printf("NULL");
 		strCmdLine = parseCommand(FTP_COMMAND_APPEND_FILE, strRemoteFile);
 	}
-
+    trace_printf("NULL");
 	if (Send(m_cmdSocket, strCmdLine) < 0)
-	{
+	{   trace_printf("NULL");
 		Close(data_fd);
 		return -1;
 	}
-
+	trace_printf("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
 	trace("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
 
 	fseek(pFile, nSize, SEEK_SET);
@@ -395,9 +397,11 @@ FTP_API CFTPManager::Put(const std::string &strRemoteFile, const std::string &st
 		}
 	}
 
+	trace_printf("@@@@Response: %s\n", serverResponse(data_fd).c_str());
 	trace("@@@@Response: %s\n", serverResponse(data_fd).c_str());
 
 	Close(data_fd);
+	trace_printf("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
 	trace("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
 	fclose(pFile);
 
@@ -552,57 +556,58 @@ FTP_API CFTPManager::Connect(int socketfd, const std::string &serverIP, unsigned
 
 
 const std::string CFTPManager::serverResponse(int sockfd)
-{
+{   trace_worker();
 	if (sockfd == INVALID_SOCKET)
-	{
+	{   trace_printf("NULL");
 		return "";
 	}
 	
 	int nRet = -1;
 	char buf[MAX_PATH] = {0};
-
+    trace_printf("NULL");
 	m_strResponse.clear();
-
+    trace_printf("NULL");
 	while ((nRet = getData(sockfd, buf, MAX_PATH)) > 0)
 	{
 		buf[MAX_PATH - 1] = '\0';
 		m_strResponse += buf;
 	}
-
+    trace_printf("m_strResponse.c_str()  %s", m_strResponse.c_str());
 	return m_strResponse;
 }
 
 FTP_API CFTPManager::getData(int fd, char *strBuf, unsigned long length)
-{
+{   trace_worker();
 	assert(strBuf != NULL);
-
+    trace_printf("NULL");
 	if (fd == INVALID_SOCKET)
-	{
+	{   trace_printf("NULL");
 		return -1;
 	}
-
+    trace_printf("NULL");
 	memset(strBuf, 0, length);
 	timeval stime;
 	int nLen;
 
-	stime.tv_sec = 1;
-	stime.tv_usec = 0;
+	stime.tv_sec = 0;
+	stime.tv_usec = 10000;
 
 	fd_set	readfd;
 	FD_ZERO( &readfd );
 	FD_SET(fd, &readfd );
 
 	if (select(fd + 1, &readfd, 0, 0, &stime) > 0)
-	{
+	{   trace_printf("NULL");
 		if ((nLen = recv(fd, strBuf, length, 0)) > 0)
-		{
+		{   trace_printf("NULL");
 			return nLen;
 		}
 		else
-		{
+		{   trace_printf("NULL");
 			return -2;
 		}
 	}
+    trace_printf("NULL");
 	return 0;
 }
 
@@ -654,7 +659,7 @@ FTP_API CFTPManager::Send(int fd, const char *cmd, const size_t len)
 
 
 FTP_API CFTPManager::createDataLink(int data_fd)
-{
+{   trace_worker();
 	assert(data_fd != INVALID_SOCKET);
 
 	std::string strData;
