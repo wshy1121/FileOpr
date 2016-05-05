@@ -57,4 +57,13 @@ IFile *CFileManager::createFile(const std::string &path)
     return fileStream;
 }
 
+void CFileManager::destroyFile(IFile *iFile)
+{   trace_worker();
+    if (iFile == NULL)
+    {
+        return ;
+    }
+    delete iFile;
+}
+
 

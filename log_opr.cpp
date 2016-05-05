@@ -176,6 +176,7 @@ LOG_FILE *CLogOprManager::createLogFile(char *fileName, std::string &clientIpAdd
 
 void CLogOprManager::destroyLogFile(LOG_FILE *pLogFile)
 {
+    CFileManager::instance()->destroyFile(pLogFile->traceFileInf.m_fileAddTime);
 	CString::destroyCString(pLogFile->content);
 	delete pLogFile;
 }

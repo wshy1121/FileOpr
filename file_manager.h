@@ -14,6 +14,7 @@ public:
     }FileType;
 public:    
     IFile *createFile(const std::string &path);
+    void destroyFile(IFile *iFile);
     static CFileManager* instance();
 private:
     CFileManager();        
