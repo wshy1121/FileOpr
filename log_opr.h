@@ -41,7 +41,7 @@ typedef struct LOG_FILE
 	std::string fileName;
     std::string clientIpAddr;
 	base::CString *content;
-	TraceFileInf *traceFileInf;
+	TraceFileInf traceFileInf;
 	
 }LOG_FILE;
 class  CLogOprManager
@@ -54,7 +54,7 @@ public:
 	bool closeFile(int fileKey);
 	bool cleanFile(char *fileName);
 	void writeFile(TraceInfoId &traceInfoId,char *content);	
-	TraceFileInfMap &getTraceFileList();
+	void getTraceFileList(TraceFileInfMap &traceFileInfMap);
 private:
 	CLogOprManager();
 private:
@@ -64,9 +64,7 @@ private:
 	LOG_FILE *createLogFile(char *fileName, std::string &clientIpAddr);
 	void destroyLogFile(LOG_FILE *pLogFile);
 	bool isAvailable();
-	void initTraceFileInf(TraceFileInf *traceFileInf, char *fileName);
-	TraceFileInf *addFile(char *fileName, std::string &clientIpAddr);
-	void removeFile(char *fileName, std::string &clientIpAddr);	
+	void initTraceFileInf(TraceFileInf *traceFileInf, char *fileName, std::string &clientIpAddr);
     std::string nowTime();
     std::string &addAddrTime(std::string &fileName, std::string &clientIpAddr);
 private:
@@ -75,7 +73,6 @@ private:
 	CBase::pthread_t m_threadId;
 	const char *m_logName;
 	LogFileMap m_logFileMap;
-	static TraceFileInfMap m_traceFileInfMap;	
 };
 
 #endif

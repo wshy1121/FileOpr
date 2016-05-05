@@ -14,7 +14,6 @@
 using namespace base;
 extern CPthreadMutex g_insMutexCalc;
 
-CLogOprManager::TraceFileInfMap CLogOprManager::m_traceFileInfMap;
 CLogOprManager *CLogOprManager::_instance = NULL;
 CLogOprManager::CLogOprManager() : m_logName("./Debug.cpp")
 {
@@ -69,8 +68,7 @@ TraceFileInf *CLogOprManager::openFile(int fileKey, char *fileName, std::string 
 	LOG_FILE *pLogFile = createLogFile(fileName, clientIpAddr);
 	m_logFileMap.insert(std::make_pair(fileKey, pLogFile));
 	
-	pLogFile->traceFileInf = addFile(fileName, clientIpAddr);
-	return pLogFile->traceFileInf;
+	return &pLogFile->traceFileInf;
 }
 
 bool CLogOprManager::closeFile(int fileKey)
@@ -85,7 +83,6 @@ bool CLogOprManager::closeFile(int fileKey)
 	LOG_FILE *pLogFile = iter->second;
 	toFile(pLogFile, pLogFile->content);
 
-	removeFile((char*)pLogFile->fileName.c_str(), pLogFile->clientIpAddr);
 	m_logFileMap.erase(iter);
 	
 	destroyLogFile(pLogFile);
@@ -128,7 +125,7 @@ void CLogOprManager::writeFile(TraceInfoId &traceInfoId, char *content)
 }
 void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
 {
-	const char *fileName = logFile->traceFileInf->fileNameAddTime.c_str();
+	const char *fileName = logFile->traceFileInf.fileNameAddTime.c_str();
 	if (pString->size() == 0)
 	{
 		return ;
@@ -142,23 +139,19 @@ void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
 		return ;
 	}
 	fwrite(pString->c_str(), pString->size(), 1, fp);
-	pString->clear();
+    pString->clear();
 	fclose (fp);
 
-	if (!logFile->traceFileInf)
-	{
-		return ;
-	}
-	TraceFileInf *&traceFileInf = logFile->traceFileInf;
+	TraceFileInf &traceFileInf = logFile->traceFileInf;
 	struct stat statbuf; 
 	if (stat(fileName,&statbuf) == 0)
 	{
-		traceFileInf->m_fileSize = statbuf.st_size;
+		traceFileInf.m_fileSize = statbuf.st_size;
 	}
-    if (traceFileInf->m_fileSize > 67108864) //large than 64M
+    if (traceFileInf.m_fileSize > 67108864) //large than 64M
     {
-        logFile->traceFileInf->fileNameAddTime = logFile->fileName;
-        std::string &fileNameAddTime = logFile->traceFileInf->fileNameAddTime;
+        logFile->traceFileInf.fileNameAddTime = logFile->fileName;
+        std::string &fileNameAddTime = logFile->traceFileInf.fileNameAddTime;
         addAddrTime(fileNameAddTime, logFile->clientIpAddr);
     }
 
@@ -173,7 +166,11 @@ LOG_FILE *CLogOprManager::createLogFile(char *fileName, std::string &clientIpAdd
     pLogFile->fileName = fileName;   
     pLogFile->clientIpAddr = clientIpAddr;
     
-
+    TraceFileInf &traceFileInf = pLogFile->traceFileInf;
+    
+    initTraceFileInf(&traceFileInf, fileName, clientIpAddr);
+    
+    
 	return pLogFile;
 }
 
@@ -190,7 +187,7 @@ bool CLogOprManager::isAvailable()
 	return bRet;
 }
 
-void CLogOprManager::initTraceFileInf(TraceFileInf *traceFileInf, char *fileName)
+void CLogOprManager::initTraceFileInf(TraceFileInf *traceFileInf, char *fileName, std::string &clientIpAddr)
 {	trace_worker();
 	traceFileInf->m_fileName = fileName;
 	traceFileInf->m_count = 0;
@@ -203,57 +200,28 @@ void CLogOprManager::initTraceFileInf(TraceFileInf *traceFileInf, char *fileName
 	{
 		traceFileInf->m_fileSize = statbuf.st_size;
 	}
+
+    traceFileInf->fileNameAddTime = fileName;       
+    std::string &fileNameAddTime = traceFileInf->fileNameAddTime;
+    addAddrTime(fileNameAddTime, clientIpAddr);
+
+    
+    printf("fileNameAddTime.c_str()  %s\n", fileNameAddTime.c_str());
 	trace_printf("traceFileInf->m_fileSize	%d", traceFileInf->m_fileSize); 
 	return ;	
 }
 
-TraceFileInf *CLogOprManager::addFile(char *fileName, std::string &clientIpAddr)
-{	trace_worker();
-	trace_printf("fileName  %s", fileName);
-	TraceFileInf *traceFileInf = NULL;
-	TraceFileInfMap::iterator iter = m_traceFileInfMap.find(fileName + clientIpAddr);
-	
-	if (iter == m_traceFileInfMap.end())
-	{	trace_printf("NULL");
-		traceFileInf = new TraceFileInf;
-		initTraceFileInf(traceFileInf, fileName);
-		m_traceFileInfMap.insert(std::make_pair(fileName + clientIpAddr, traceFileInf));
-	}
-	else
-	{	trace_printf("NULL");
-		traceFileInf = iter->second;
-	}
-	traceFileInf->m_count++;
-	trace_printf("traceFileInf->m_count  %d", traceFileInf->m_count);
-    
-    traceFileInf->fileNameAddTime = fileName;       
-    std::string &fileNameAddTime = traceFileInf->fileNameAddTime;
-    addAddrTime(fileNameAddTime, clientIpAddr);
-    printf("fileNameAddTime.c_str()  %s\n", fileNameAddTime.c_str());
-	return traceFileInf;
-}
-
-void CLogOprManager::removeFile(char *fileName, std::string &clientIpAddr)
-{	trace_worker();
-	trace_printf("fileName  %s", fileName);
-	TraceFileInfMap::iterator iter = m_traceFileInfMap.find(fileName + clientIpAddr);
-	if (iter == m_traceFileInfMap.end())
-	{	trace_printf("NULL");
-		return ;
-	}
-	TraceFileInf *traceFileInf = iter->second;
-	traceFileInf->m_count--;
-	trace_printf("traceFileInf->m_count  %d", traceFileInf->m_count);		
-	if (traceFileInf->m_count == 0)
-	{	trace_printf("NULL");
-		m_traceFileInfMap.erase(iter);
-		delete traceFileInf;
-	}
-}
-
-CLogOprManager::TraceFileInfMap &CLogOprManager::getTraceFileList()
+void CLogOprManager::getTraceFileList(TraceFileInfMap &traceFileInfMap)
 {
-	return m_traceFileInfMap;
+    CGuardMutex guardMutex(m_logFileMutex);
+    LogFileMap &logFileMap = m_logFileMap;
+    
+    LogFileMap::iterator iter = logFileMap.begin();
+    for (; iter != logFileMap.end(); ++iter)
+    {
+        LOG_FILE *logFile = iter->second;
+        traceFileInfMap[logFile->fileName+logFile->clientIpAddr] = &logFile->traceFileInf;
+    }
 }
 
 std::string CLogOprManager::nowTime()
