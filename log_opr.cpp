@@ -125,34 +125,31 @@ void CLogOprManager::writeFile(TraceInfoId &traceInfoId, char *content)
 }
 void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
 {
-	const char *fileName = logFile->traceFileInf.fileNameAddTime.c_str();
 	if (pString->size() == 0)
 	{
 		return ;
 	}
-	FILE *fp = NULL;
-	fp = base::fopen (fileName, "a+");
-	if (fp == NULL)
+
+    
+	IFile *fileAddTime = logFile->traceFileInf.m_fileAddTime;
+    
+	if (fileAddTime == NULL || fileAddTime->open() == false)
 	{
-	    printf("toFile  fopen  %s failed\n", fileName);
+	    printf("toFile  fopen  %s failed\n", fileAddTime->getPath().c_str());
 	    pString->clear();
 		return ;
 	}
-	fwrite(pString->c_str(), pString->size(), 1, fp);
+    fileAddTime->write(pString->c_str(), pString->size());
     pString->clear();
-	fclose (fp);
+	fileAddTime->close();
 
 	TraceFileInf &traceFileInf = logFile->traceFileInf;
-	struct stat statbuf; 
-	if (stat(fileName,&statbuf) == 0)
-	{
-		traceFileInf.m_fileSize = statbuf.st_size;
-	}
+    traceFileInf.m_fileSize = fileAddTime->size();
     if (traceFileInf.m_fileSize > 67108864) //large than 64M
     {
-        logFile->traceFileInf.fileNameAddTime = logFile->fileName;
-        std::string &fileNameAddTime = logFile->traceFileInf.fileNameAddTime;
+        std::string fileNameAddTime = logFile->fileName;
         addAddrTime(fileNameAddTime, logFile->clientIpAddr);
+        traceFileInf.m_fileAddTime->setPath(fileNameAddTime);
     }
 
 	return ;
@@ -201,9 +198,9 @@ void CLogOprManager::initTraceFileInf(TraceFileInf *traceFileInf, char *fileName
 		traceFileInf->m_fileSize = statbuf.st_size;
 	}
 
-    traceFileInf->fileNameAddTime = fileName;       
-    std::string &fileNameAddTime = traceFileInf->fileNameAddTime;
+    std::string fileNameAddTime = fileName;
     addAddrTime(fileNameAddTime, clientIpAddr);
+    traceFileInf->m_fileAddTime = IFile::CreateFile(fileNameAddTime);       
 
     
     printf("fileNameAddTime.c_str()  %s\n", fileNameAddTime.c_str());

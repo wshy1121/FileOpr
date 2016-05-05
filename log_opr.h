@@ -2,6 +2,7 @@
 #define _LOG_OPR_H_
 #include "link_tool.h"
 #include "mem_calc.h"
+#include "IFile.h"
 
 typedef struct TraceFileInf
 {
@@ -11,7 +12,7 @@ typedef struct TraceFileInf
 	int m_candyCount;
 	int m_traceCount;
 	std::string m_lastCandy;
-    std::string fileNameAddTime;
+    IFile *m_fileAddTime;
 }TraceFileInf;
 
 typedef struct LogDataInf
