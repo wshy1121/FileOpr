@@ -52,4 +52,19 @@ int CLocaleFile::size()
     return 0;
 }
 
+bool CLocaleFile::clean()
+{   trace_worker();
+    FILE *fp = NULL;
+    trace_printf("fileName  %s", m_path.c_str());
+    fp = base::fopen(m_path.c_str(), "w");
+    if (fp == NULL)
+    {   trace_printf("NULL");
+        return true;
+    }
+    fclose(fp);
+    trace_printf("NULL");   
+    return true;
+} 
+
+
 

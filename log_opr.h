@@ -53,7 +53,7 @@ public:
 	static CLogOprManager *instance();
 	TraceFileInf *openFile(int fileKey, char *fileName, std::string &clientIpAddr);
 	bool closeFile(int fileKey);
-	bool cleanFile(char *fileName);
+	bool cleanFile(int fileKey);
 	void writeFile(TraceInfoId &traceInfoId,char *content);	
 	void getTraceFileList(TraceFileInfMap &traceFileInfMap);
 private:

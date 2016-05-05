@@ -23,7 +23,7 @@ IFile::FileType IFile::tranceFileType(const std::string &path)
     return e_localeFile;
 }
 
-//admin:7ujMko0admin@ftp://127.0.0.1/Log/TraceWorkerDebug.cpp
+//huangyuan1:7ujMko0admin@ftp://127.0.0.1/Log/TraceWorkerDebug.cpp
 IFile *IFile::CreateFile(const std::string &path)
 {   trace_worker();
     trace_printf("path.c_str()  %s", path.c_str());

@@ -27,6 +27,7 @@ public:
     virtual int write(const char *data, int dataLen) = 0;
     virtual bool close() = 0;
     virtual int size() = 0;
+    virtual bool clean() = 0;
     
 private:
     static FileType tranceFileType(const std::string &path);

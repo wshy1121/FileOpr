@@ -26,3 +26,9 @@ int CFtpFile::size()
     return 0;
 }
 
+bool CFtpFile::clean()
+{
+    return true;
+}
+
+

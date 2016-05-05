@@ -11,6 +11,7 @@ public:
     virtual int write(const char *data, int dataLen);
     virtual bool close();
     virtual int size();
+    virtual bool clean();
 };
 #endif
 

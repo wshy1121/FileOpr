@@ -89,17 +89,20 @@ bool CLogOprManager::closeFile(int fileKey)
 	return true;
 }
 
-bool CLogOprManager::cleanFile(char *fileName)
+bool CLogOprManager::cleanFile(int fileKey)
 {	trace_worker();
-	FILE *fp = NULL;
-	trace_printf("fileName  %s", fileName);
-	fp = base::fopen(fileName, "w");
-	if (fp == NULL)
-	{	trace_printf("NULL");
-		return true;
-	}
-	fclose(fp);
-	trace_printf("NULL");	
+	CGuardMutex guardMutex(m_logFileMutex);
+	LogFileMap::iterator iter = m_logFileMap.find(fileKey);
+	if (iter == m_logFileMap.end())
+    {
+        return false;
+    }
+    IFile *fileAddTime = iter->second->traceFileInf.m_fileAddTime;
+    if (fileAddTime == NULL)
+    {
+        return false;
+    }
+    fileAddTime->clean();
 	return true;
 }
 
