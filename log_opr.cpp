@@ -203,7 +203,7 @@ void CLogOprManager::initTraceFileInf(TraceFileInf *traceFileInf, char *fileName
 
     std::string fileNameAddTime = fileName;
     addAddrTime(fileNameAddTime, clientIpAddr);
-    traceFileInf->m_fileAddTime = IFile::CreateFile(fileNameAddTime);       
+    traceFileInf->m_fileAddTime = CFileManager::instance()->createFile(fileNameAddTime);       
 
     
     printf("fileNameAddTime.c_str()  %s\n", fileNameAddTime.c_str());

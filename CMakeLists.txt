@@ -28,6 +28,7 @@ SET(SRC_SRCS
   ftp_file.cpp
   locale_file.cpp
   IFile.cpp
+  file_manager.cpp
 )
 
 # shared library

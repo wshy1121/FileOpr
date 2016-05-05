@@ -2,7 +2,7 @@
 #define _LOG_OPR_H_
 #include "link_tool.h"
 #include "mem_calc.h"
-#include "IFile.h"
+#include "file_manager.h"
 
 typedef struct TraceFileInf
 {

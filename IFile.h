@@ -5,16 +5,9 @@
 class IFile
 {
 public:
-    typedef enum FileType
-    {
-        e_errFile = 1,
-        e_localeFile,
-        e_ftpFile,
-    }FileType;
     IFile();
     virtual ~IFile();
 public:
-    static IFile *CreateFile(const std::string &path);
     std::string &getPath()
     {
         return m_path;
@@ -29,8 +22,6 @@ public:
     virtual int size() = 0;
     virtual bool clean() = 0;
     
-private:
-    static FileType tranceFileType(const std::string &path);
 protected:
     std::string m_path;
 };
