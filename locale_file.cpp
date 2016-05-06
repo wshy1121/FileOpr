@@ -7,8 +7,13 @@
 
 CLocaleFile::CLocaleFile(IFile::FileKey &fileKey)
 :m_fp(NULL)
-{
+{   trace_worker();
     m_path = fileKey.path;
+}
+
+CLocaleFile::~CLocaleFile()
+{   trace_worker();
+
 }
 
 bool CLocaleFile::open()

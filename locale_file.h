@@ -6,6 +6,7 @@ class CLocaleFile : public IFile
 {
 public:
     CLocaleFile(IFile::FileKey &fileKey);
+    ~CLocaleFile();
 public:
     static bool parseKey(const std::string &path, IFile::FileKey &fileKey);
 public:    

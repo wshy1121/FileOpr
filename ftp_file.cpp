@@ -21,6 +21,11 @@ CFtpFile::CFtpFile(IFile::FileKey &fileKey)
     trace_printf("%s  %s  %s  %s", m_userName.c_str(), m_passWord.c_str(), m_ftpSerIp.c_str(), m_path.c_str());
 }
 
+CFtpFile::~CFtpFile()
+{   trace_worker();
+
+}
+
 bool CFtpFile::open()
 {   trace_worker();
     return true;

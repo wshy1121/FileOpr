@@ -120,3 +120,13 @@ void CFileManager::cleanFileHander()
     }
 }
 
+void CFileManager::dispFileMap()
+{   trace_worker();
+    FileMap::iterator iter;	
+    for(iter = m_fileMap.begin(); iter!=m_fileMap.end(); ++iter)
+    {
+        IFile::FileKey fileKey = iter->first; 
+        trace_printf("fileKey.type, fileKey.serInf  %d  %s", fileKey.type, fileKey.serInf.c_str());
+        
+    }
+}

@@ -15,6 +15,7 @@ private:
     bool getFileKey(const std::string &path, IFile::FileKey &fileKey);
     IFileHander createFileHander(IFile::FileKey &fileKey);
     void cleanFileHander();
+    void dispFileMap();
 private:
     static  CFileManager* _instance;
     typedef std::map<IFile::FileKey, IFileHander> FileMap;
