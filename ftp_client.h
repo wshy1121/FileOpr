@@ -126,7 +126,7 @@ public :
 	// 上载文件  支持断电传送方式
 	FTP_API Put(const std::string &strRemoteFile, const std::string &strLocalFile);
 
-
+    FTP_API WriteData(const std::string &strRemoteFile, const char *dataBuffer, int dataBufferLen);
 private:
 	// !合成发送到服务器的命令
 	const std::string parseCommand(const unsigned int command, const std::string &strParam);

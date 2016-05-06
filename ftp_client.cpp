@@ -551,7 +551,6 @@ const std::string CFTPManager::serverResponse(int sockfd)
 		return "";
 	}
 	
-	int nRet = -1;
 	char buf[MAX_PATH] = {0};
     trace_printf("NULL");
 	m_strResponse.clear();
@@ -799,4 +798,61 @@ FTP_API CFTPManager::parseResponse(const std::string &str)
 
 	return val;
 }
+
+
+FTP_API CFTPManager::WriteData(const std::string &strRemoteFile, const char *dataBuffer, int dataBufferLen)
+{   trace_worker();
+    trace_printf("strRemoteFile.c_str()  %s", strRemoteFile.c_str());
+	std::string strCmdLine;
+	long nSize = getFileLength(strRemoteFile);
+
+	int data_fd = socket(AF_INET, SOCK_STREAM, 0);
+	assert(data_fd != -1);
+
+	if (createDataLink(data_fd) < 0)
+	{   trace_printf("NULL");
+		return -1;
+	}
+	
+	if (nSize == -1)
+	{   trace_printf("NULL");
+		strCmdLine = parseCommand(FTP_COMMAND_UPLOAD_FILE, strRemoteFile);
+	}
+	else
+	{   trace_printf("NULL");
+		strCmdLine = parseCommand(FTP_COMMAND_APPEND_FILE, strRemoteFile);
+	}
+    trace_printf("NULL");
+	if (Send(m_cmdSocket, strCmdLine) < 0)
+	{   trace_printf("NULL");
+		Close(data_fd);
+		return -1;
+	}
+
+    int sendPos = 0;
+    int MaxDataLen = 0;
+    int remainLen = 0;
+    int sendRet = -1;
+	while (sendPos < dataBufferLen)
+	{
+	    MaxDataLen = FTP_DEFAULT_BUFFER;
+        remainLen = dataBufferLen - sendPos;
+        
+	    if (remainLen < MaxDataLen)
+        {
+            MaxDataLen = remainLen;
+        }
+        
+        sendRet = Send(data_fd, dataBuffer + sendPos, MaxDataLen);
+		if (sendRet < 0)
+		{
+			Close(data_fd);
+			return -1;
+		}
+        sendPos += MaxDataLen;
+	}
+	Close(data_fd);
+	return 0;
+}
+
 
