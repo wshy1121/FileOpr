@@ -2,12 +2,12 @@
 #include "IFile.h"
 
 IFile::IFile()
-{
+{   trace_worker();
 
 }
 
 IFile::~IFile()
-{
+{   trace_worker();
 
 }
 

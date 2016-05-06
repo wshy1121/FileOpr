@@ -54,7 +54,8 @@ bool CFileManager::getFileKey(const std::string &path, IFile::FileKey &fileKey)
 IFileHander CFileManager::getFileHander(const std::string &path)
 {   trace_worker();
     trace_printf("path.c_str()  %s", path.c_str());
-
+    cleanFileHander();
+    
     IFile::FileKey fileKey;
     if (getFileKey(path, fileKey) == false)
     {   trace_printf("NULL");
@@ -62,39 +63,57 @@ IFileHander CFileManager::getFileHander(const std::string &path)
     }
 
     
-    IFileHander fileStream;
+    IFileHander fileHander;
     FileMap::iterator iter = m_fileMap.find(fileKey);
     if (iter != m_fileMap.end())
     {   trace_printf("NULL");     
-        fileStream = iter->second;
+        fileHander = iter->second;
     }
     else
     {   trace_printf("NULL");  
-        fileStream = createFileHander(fileKey);
-        if (fileStream != NULL)
+        fileHander = createFileHander(fileKey);
+        if (fileHander != NULL)
         {   trace_printf("NULL");
-            m_fileMap.insert(std::make_pair(fileKey, fileStream));
+            m_fileMap.insert(std::make_pair(fileKey, fileHander));
         }
     }
-    return fileStream;
+    return fileHander;
 }
 
 IFileHander CFileManager::createFileHander(IFile::FileKey &fileKey)
 {   trace_worker();
-    IFileHander fileStream;
+    IFileHander fileHander;
     
     switch (fileKey.type)
     {
         case IFile::e_ftpFile:
-            fileStream = IFileHander(new CFtpFile(fileKey.fileInf));
+            fileHander = IFileHander(new CFtpFile(fileKey.fileInf));
             break;
         case IFile::e_localeFile:
-            fileStream = IFileHander(new CLocaleFile(fileKey.fileInf));
+            fileHander = IFileHander(new CLocaleFile(fileKey.fileInf));
             break;
         default:
             break;
     }
-    return fileStream;
+    return fileHander;
 }
 
+void CFileManager::cleanFileHander()
+{   trace_worker();
+	FileMap::iterator iter;	
+	
+    for(iter = m_fileMap.begin(); iter!=m_fileMap.end();)
+    {
+        IFileHander &fileHander = iter->second;
+        trace_printf("fileHander.use_count  %ld", fileHander.use_count());
+        if (fileHander.use_count() == 1)
+        {   trace_printf("NULL");
+            m_fileMap.erase(iter++);
+        }
+        else
+        {   trace_printf("NULL");
+            ++iter;
+        }
+    }
+}
 
