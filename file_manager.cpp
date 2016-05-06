@@ -46,7 +46,8 @@ bool CFileManager::getFileKey(const std::string &path, IFile::FileKey &fileKey)
     if (bRet == false)
     {
         fileKey.type = IFile::e_errFile;
-        fileKey.fileInf.clear();
+        fileKey.serInf.clear();
+        fileKey.path.clear();
     }
     return bRet;
 }
@@ -54,7 +55,6 @@ bool CFileManager::getFileKey(const std::string &path, IFile::FileKey &fileKey)
 IFileHander CFileManager::getFileHander(const std::string &path)
 {   trace_worker();
     trace_printf("path.c_str()  %s", path.c_str());
-    cleanFileHander();
     
     IFile::FileKey fileKey;
     if (getFileKey(path, fileKey) == false)
@@ -77,6 +77,9 @@ IFileHander CFileManager::getFileHander(const std::string &path)
             m_fileMap.insert(std::make_pair(fileKey, fileHander));
         }
     }
+    
+    cleanFileHander();
+    fileHander->setPath(fileKey.path);
     return fileHander;
 }
 
@@ -87,10 +90,10 @@ IFileHander CFileManager::createFileHander(IFile::FileKey &fileKey)
     switch (fileKey.type)
     {
         case IFile::e_ftpFile:
-            fileHander = IFileHander(new CFtpFile(fileKey.fileInf));
+            fileHander = IFileHander(new CFtpFile(fileKey));
             break;
         case IFile::e_localeFile:
-            fileHander = IFileHander(new CLocaleFile(fileKey.fileInf));
+            fileHander = IFileHander(new CLocaleFile(fileKey));
             break;
         default:
             break;

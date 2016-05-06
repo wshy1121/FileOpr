@@ -15,7 +15,8 @@ public:
     typedef struct FileKey
     {
         FileType type;
-        std::string fileInf;
+        std::string serInf;
+        std::string path;
         bool operator < (const struct FileKey &fileKey) const
     	{
     		if (type < fileKey.type)
@@ -24,7 +25,7 @@ public:
     		}
     		else if (type == fileKey.type)
     		{
-    			return fileInf < fileKey.fileInf;
+    			return serInf < fileKey.serInf;
     		}
     		return false;
     	}

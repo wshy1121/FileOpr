@@ -5,10 +5,10 @@
 #include "trace_worker.h"
 #include "platform_base.h"
 
-CLocaleFile::CLocaleFile(const std::string &fileInf)
+CLocaleFile::CLocaleFile(IFile::FileKey &fileKey)
 :m_fp(NULL)
 {
-    m_path = fileInf;
+    m_path = fileKey.path;
 }
 
 bool CLocaleFile::open()
@@ -69,7 +69,8 @@ bool CLocaleFile::clean()
 bool CLocaleFile::parseKey(const std::string &path, IFile::FileKey &fileKey)
 {   trace_worker();
     fileKey.type = e_localeFile;
-    fileKey.fileInf = path;
+    fileKey.serInf.clear();
+    fileKey.path = path;
     return true;
 }
 

@@ -1,9 +1,24 @@
 #include "ftp_file.h"
 #include "trace_worker.h"
+#include "Json/json.h"
 
-CFtpFile::CFtpFile(const std::string &fileInf)
+CFtpFile::CFtpFile(IFile::FileKey &fileKey)
 {   trace_worker();
-    m_path = fileInf;
+    std::string &serInf = fileKey.serInf;
+    
+    Json::Reader reader;  
+    Json::Value fileInfValue;
+    if (reader.parse(serInf, fileInfValue) == false)  
+    {   trace_printf("NULL");
+        return ;
+    }
+
+    m_userName = fileInfValue["userName"].asString();
+    m_passWord = fileInfValue["passWord"].asString();
+    m_ftpSerIp = fileInfValue["ftpSerIp"].asString();
+    m_path = fileKey.path;
+    
+    trace_printf("%s  %s  %s  %s", m_userName.c_str(), m_passWord.c_str(), m_ftpSerIp.c_str(), m_path.c_str());
 }
 
 bool CFtpFile::open()
@@ -81,7 +96,15 @@ bool CFtpFile::parseKey(const std::string &path, IFile::FileKey &fileKey)
     std::string ftpPath = path.substr(strPos);
     trace_printf("ftpPath.c_str()  %s", ftpPath.c_str());
 
+    Json::Value fileInfValue;
+    fileInfValue["userName"] = userName;
+    fileInfValue["passWord"] = passWord;
+    fileInfValue["ftpSerIp"] = ftpSerIp;
     
+    fileKey.type = e_ftpFile;
+    fileKey.serInf = fileInfValue.toStyledString();
+    fileKey.path = ftpPath;
+    trace_printf("fileKey.serInf.c_str()  %s", fileKey.serInf.c_str());
     return true;
 }
 

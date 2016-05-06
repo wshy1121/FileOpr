@@ -152,7 +152,7 @@ void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
     {
         std::string fileNameAddTime = logFile->fileName;
         addAddrTime(fileNameAddTime, logFile->clientIpAddr);
-        traceFileInf.m_fileAddTime->setPath(fileNameAddTime);
+        traceFileInf.m_fileAddTime = CFileManager::instance()->getFileHander(fileNameAddTime);
     }
 
 	return ;

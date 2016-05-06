@@ -5,7 +5,7 @@
 class CFtpFile : public IFile
 {
 public:
-    CFtpFile(const std::string &fileInf);
+    CFtpFile(IFile::FileKey &fileKey);
 public:
     static bool parseKey(const std::string &path, IFile::FileKey &fileKey);
 public:    
@@ -18,7 +18,6 @@ private:
     std::string m_userName;
     std::string m_passWord;
     std::string m_ftpSerIp;
-    std::string m_ftpPath;
 };
 #endif
 
