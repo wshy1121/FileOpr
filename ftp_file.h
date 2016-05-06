@@ -6,6 +6,8 @@ class CFtpFile : public IFile
 {
 public:
     CFtpFile(const std::string &path);
+public:
+    static bool parseKey(const std::string &path, IFile::FileKey &fileKey);
 public:    
     virtual bool open();
     virtual int write(const char *data, int dataLen);

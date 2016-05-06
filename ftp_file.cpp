@@ -32,4 +32,10 @@ bool CFtpFile::clean()
     return true;
 }
 
+//huangyuan1:7ujMko0admin@ftp://127.0.0.1/Log/TraceWorkerDebug.cpp
+bool CFtpFile::parseKey(const std::string &path, IFile::FileKey &fileKey)
+{   trace_worker();
+    return true;
+}
+
 

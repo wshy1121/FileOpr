@@ -4,9 +4,37 @@
 
 class IFile
 {
+public:    
+    typedef enum FileType
+    {
+        e_errFile = 1,
+        e_localeFile,
+        e_ftpFile,
+    }FileType;
+    typedef struct FileKey
+    {
+        FileType type;
+        std::string fileInf;
+        bool operator < (const struct FileKey &fileKey) const
+    	{
+    		if (type < fileKey.type)
+    		{
+    			return true;
+    		}
+    		else if (type == fileKey.type)
+    		{
+    			return fileInf < fileKey.fileInf;
+    		}
+    		return false;
+    	}
+        
+    }FileKey;
+
 public:
     IFile();
     virtual ~IFile();
+public:    
+    static FileType tranceFileType(const std::string &path);
 public:
     std::string &getPath()
     {

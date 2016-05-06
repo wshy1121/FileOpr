@@ -25,30 +25,45 @@ CFileManager::CFileManager()
 {
 }
 
-CFileManager::FileType CFileManager::tranceFileType(const std::string &path)
+bool CFileManager::getFileKey(const std::string &path, IFile::FileKey &fileKey)
 {   trace_worker();
-    if (path.find("@ftp://") != std::string::npos)
-    {   trace_printf("e_ftpFile");
-        return e_ftpFile;
+    fileKey.type = IFile::tranceFileType(path);
+
+    bool bRet = false;
+    IFile::FileType &fileType = fileKey.type;
+    switch (fileType)
+    {
+        case IFile::e_ftpFile:
+            bRet = CFtpFile::parseKey(path, fileKey);
+            break;
+        case IFile::e_localeFile:
+            bRet = CLocaleFile::parseKey(path, fileKey);
+            break;
+        default:
+            break;
     }
-    trace_printf("e_localeFile");
-    return e_localeFile;
+    
+    if (bRet == false)
+    {
+        fileKey.type = IFile::e_errFile;
+        fileKey.fileInf.clear();
+    }
+    return bRet;
 }
 
-//huangyuan1:7ujMko0admin@ftp://127.0.0.1/Log/TraceWorkerDebug.cpp
 IFile *CFileManager::createFile(const std::string &path)
 {   trace_worker();
     trace_printf("path.c_str()  %s", path.c_str());
 
     IFile *fileStream = NULL;
-    FileType fileType = tranceFileType(path);
+    IFile::FileType fileType = IFile::tranceFileType(path);
     trace_printf("fileType  %d", fileType);
     switch (fileType)
     {
-        case e_ftpFile:
+        case IFile::e_ftpFile:
             fileStream = new CFtpFile(path);
             break;
-        case e_localeFile:
+        case IFile::e_localeFile:
             fileStream = new CLocaleFile(path);
             break;
         default:
