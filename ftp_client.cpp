@@ -348,10 +348,6 @@ FTP_API CFTPManager::Put(const std::string &strRemoteFile, const std::string &st
 	char strBuf[dataLen] = {0};
 	long nSize = getFileLength(strRemoteFile);
 	unsigned long nLen = 0;
-// 	struct stat sBuf;
-// 
-// 	assert(stat(strLocalFile.c_str(), &sBuf) == 0);
-// 	trace("size: %d\n", sBuf.st_size);
 
 	FILE *pFile = fopen(strLocalFile.c_str(), "rb");  // 以只读方式打开  且文件必须存在
 	assert(pFile != NULL);
@@ -378,8 +374,6 @@ FTP_API CFTPManager::Put(const std::string &strRemoteFile, const std::string &st
 		Close(data_fd);
 		return -1;
 	}
-	trace_printf("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
-	trace("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
 
 	fseek(pFile, nSize, SEEK_SET);
 	while (!feof(pFile))
@@ -397,12 +391,7 @@ FTP_API CFTPManager::Put(const std::string &strRemoteFile, const std::string &st
 		}
 	}
 
-	trace_printf("@@@@Response: %s\n", serverResponse(data_fd).c_str());
-	trace("@@@@Response: %s\n", serverResponse(data_fd).c_str());
-
 	Close(data_fd);
-	trace_printf("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
-	trace("@@@@Response: %s\n", serverResponse(m_cmdSocket).c_str());
 	fclose(pFile);
 
 	return 0;
@@ -567,7 +556,7 @@ const std::string CFTPManager::serverResponse(int sockfd)
     trace_printf("NULL");
 	m_strResponse.clear();
     trace_printf("NULL");
-	while ((nRet = getData(sockfd, buf, MAX_PATH)) > 0)
+	if(getData(sockfd, buf, MAX_PATH) > 0)
 	{
 		buf[MAX_PATH - 1] = '\0';
 		m_strResponse += buf;
@@ -589,8 +578,8 @@ FTP_API CFTPManager::getData(int fd, char *strBuf, unsigned long length)
 	timeval stime;
 	int nLen;
 
-	stime.tv_sec = 0;
-	stime.tv_usec = 10000;
+	stime.tv_sec = 1;
+	stime.tv_usec = 0;
 
 	fd_set	readfd;
 	FD_ZERO( &readfd );
