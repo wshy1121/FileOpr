@@ -5,10 +5,10 @@
 #include "trace_worker.h"
 #include "platform_base.h"
 
-CLocaleFile::CLocaleFile(const std::string &path)
+CLocaleFile::CLocaleFile(const std::string &fileInf)
 :m_fp(NULL)
 {
-    m_path = path;
+    m_path = fileInf;
 }
 
 bool CLocaleFile::open()

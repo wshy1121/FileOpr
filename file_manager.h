@@ -8,11 +8,12 @@
 class CFileManager
 {
 public:
-    IFileHander createFile(const std::string &path);
+    IFileHander getFileHander(const std::string &path);
     static CFileManager* instance();
 private:
     CFileManager();        
     bool getFileKey(const std::string &path, IFile::FileKey &fileKey);
+    IFileHander createFileHander(IFile::FileKey &fileKey);
 private:
     static  CFileManager* _instance;
     typedef std::map<IFile::FileKey, IFileHander> FileMap;

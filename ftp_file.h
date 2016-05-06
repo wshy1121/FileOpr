@@ -5,7 +5,7 @@
 class CFtpFile : public IFile
 {
 public:
-    CFtpFile(const std::string &path);
+    CFtpFile(const std::string &fileInf);
 public:
     static bool parseKey(const std::string &path, IFile::FileKey &fileKey);
 public:    

@@ -1,9 +1,9 @@
 #include "ftp_file.h"
 #include "trace_worker.h"
 
-CFtpFile::CFtpFile(const std::string &path)
+CFtpFile::CFtpFile(const std::string &fileInf)
 {   trace_worker();
-    m_path = path;
+    m_path = fileInf;
 }
 
 bool CFtpFile::open()
