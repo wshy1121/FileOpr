@@ -14,6 +14,11 @@ public:
     virtual bool close();
     virtual int size();
     virtual bool clean();
+private:
+    std::string m_userName;
+    std::string m_passWord;
+    std::string m_ftpSerIp;
+    std::string m_ftpPath;
 };
 #endif
 
