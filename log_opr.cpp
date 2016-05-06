@@ -97,7 +97,7 @@ bool CLogOprManager::cleanFile(int fileKey)
     {
         return false;
     }
-    IFile *fileAddTime = iter->second->traceFileInf.m_fileAddTime;
+    IFileHander fileAddTime = iter->second->traceFileInf.m_fileAddTime;
     if (fileAddTime == NULL)
     {
         return false;
@@ -134,7 +134,7 @@ void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
 	}
 
     
-	IFile *fileAddTime = logFile->traceFileInf.m_fileAddTime;
+	IFileHander fileAddTime = logFile->traceFileInf.m_fileAddTime;
     
 	if (fileAddTime == NULL || fileAddTime->open() == false)
 	{
@@ -176,7 +176,6 @@ LOG_FILE *CLogOprManager::createLogFile(char *fileName, std::string &clientIpAdd
 
 void CLogOprManager::destroyLogFile(LOG_FILE *pLogFile)
 {
-    CFileManager::instance()->destroyFile(pLogFile->traceFileInf.m_fileAddTime);
 	CString::destroyCString(pLogFile->content);
 	delete pLogFile;
 }

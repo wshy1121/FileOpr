@@ -12,7 +12,7 @@ typedef struct TraceFileInf
 	int m_candyCount;
 	int m_traceCount;
 	std::string m_lastCandy;
-    IFile *m_fileAddTime;
+    IFileHander m_fileAddTime;
 }TraceFileInf;
 
 typedef struct LogDataInf

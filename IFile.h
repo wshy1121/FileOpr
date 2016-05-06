@@ -1,6 +1,7 @@
 #ifndef _FILE_FACTOR_H_
 #define _FILE_FACTOR_H_
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 class IFile
 {
@@ -54,5 +55,6 @@ protected:
     std::string m_path;
 };
 
+typedef boost::shared_ptr<IFile> IFileHander;
 #endif
 

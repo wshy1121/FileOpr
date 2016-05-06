@@ -51,20 +51,22 @@ bool CFileManager::getFileKey(const std::string &path, IFile::FileKey &fileKey)
     return bRet;
 }
 
-IFile *CFileManager::createFile(const std::string &path)
+IFileHander CFileManager::createFile(const std::string &path)
 {   trace_worker();
     trace_printf("path.c_str()  %s", path.c_str());
 
-    IFile *fileStream = NULL;
+    IFile::FileKey fileKey;
+    
+    IFileHander fileStream;
     IFile::FileType fileType = IFile::tranceFileType(path);
     trace_printf("fileType  %d", fileType);
     switch (fileType)
     {
         case IFile::e_ftpFile:
-            fileStream = new CFtpFile(path);
+            fileStream = IFileHander(new CFtpFile(path));
             break;
         case IFile::e_localeFile:
-            fileStream = new CLocaleFile(path);
+            fileStream = IFileHander(new CLocaleFile(path));
             break;
         default:
             break;
@@ -72,13 +74,5 @@ IFile *CFileManager::createFile(const std::string &path)
     return fileStream;
 }
 
-void CFileManager::destroyFile(IFile *iFile)
-{   trace_worker();
-    if (iFile == NULL)
-    {
-        return ;
-    }
-    delete iFile;
-}
 
 

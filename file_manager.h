@@ -7,16 +7,15 @@
 
 class CFileManager
 {
-public:    
-    IFile *createFile(const std::string &path);
-    void destroyFile(IFile *iFile);
+public:
+    IFileHander createFile(const std::string &path);
     static CFileManager* instance();
 private:
     CFileManager();        
     bool getFileKey(const std::string &path, IFile::FileKey &fileKey);
 private:
     static  CFileManager* _instance;
-    typedef std::map<IFile::FileKey, IFile *> FileMap;
+    typedef std::map<IFile::FileKey, IFileHander> FileMap;
     FileMap m_fileMap;
 };
 #endif
