@@ -13,7 +13,7 @@ public:
     virtual bool open();
     virtual int write(const char *data, int dataLen);
     virtual bool close();
-    virtual int size();
+    virtual long size();
     virtual bool clean();
 private:
     FILE *m_fp;

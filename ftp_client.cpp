@@ -296,7 +296,7 @@ FTP_API CFTPManager::Rename(const std::string &strRemoteFile, const std::string 
 }
 
 long CFTPManager::getFileLength(const std::string &strRemoteFile)
-{
+{   trace_worker();
 	assert(m_cmdSocket != INVALID_SOCKET);
 
 	std::string strCmdLine = parseCommand(FTP_COMMAND_FILE_SIZE, strRemoteFile);
@@ -393,7 +393,8 @@ FTP_API CFTPManager::Put(const std::string &strRemoteFile, const std::string &st
 
 	Close(data_fd);
 	fclose(pFile);
-
+    std::string response = serverResponse(m_cmdSocket);
+    trace_printf("response.c_str()  %s", response.c_str());
 	return 0;
 }
 
@@ -656,9 +657,10 @@ FTP_API CFTPManager::createDataLink(int data_fd)
 	std::list<std::string> strArray ;
 
 	std::string parseStr = Pasv();
-
+    trace_printf("parseStr.c_str()  |%s|", parseStr.c_str());
+    trace_printf("parseStr.size()  %d", parseStr.size());
 	if (parseStr.size() <= 0)
-	{
+	{   trace_printf("NULL");
 		return -1;
 	}
 
@@ -670,7 +672,9 @@ FTP_API CFTPManager::createDataLink(int data_fd)
 
 	//trace("ParseAfter: %s\n", strData.c_str());
 	if( SplitString( strData , strArray , "," ) <0)
-		return -1;
+    {   trace_printf("NULL");
+        return -1;
+    }   
 
 	if( ParseString( strArray , nPort , strServerIp) < 0)
 		return -1;
@@ -804,6 +808,8 @@ FTP_API CFTPManager::WriteData(const std::string &strRemoteFile, const char *dat
 {   trace_worker();
     trace_printf("strRemoteFile.c_str()  %s", strRemoteFile.c_str());
 	std::string strCmdLine;
+    std::string response;
+
 	long nSize = getFileLength(strRemoteFile);
 
 	int data_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -828,7 +834,8 @@ FTP_API CFTPManager::WriteData(const std::string &strRemoteFile, const char *dat
 		Close(data_fd);
 		return -1;
 	}
-
+    response = serverResponse(m_cmdSocket);
+    trace_printf("response.c_str()  %s", response.c_str());
     int sendPos = 0;
     int MaxDataLen = 0;
     int remainLen = 0;
@@ -842,16 +849,21 @@ FTP_API CFTPManager::WriteData(const std::string &strRemoteFile, const char *dat
         {
             MaxDataLen = remainLen;
         }
-        
+        trace_printf("MaxDataLen  %d", MaxDataLen);
         sendRet = Send(data_fd, dataBuffer + sendPos, MaxDataLen);
 		if (sendRet < 0)
-		{
+		{   trace_printf("NULL");
 			Close(data_fd);
 			return -1;
 		}
         sendPos += MaxDataLen;
-	}
+	}    
+    
 	Close(data_fd);
+
+    
+    response = serverResponse(m_cmdSocket);
+    trace_printf("response.c_str()  %s", response.c_str());
 	return 0;
 }
 

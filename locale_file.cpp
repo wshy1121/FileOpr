@@ -47,7 +47,7 @@ bool CLocaleFile::close()
     return false;
 }
 
-int CLocaleFile::size()
+long CLocaleFile::size()
 {   trace_worker();
     struct stat statbuf; 
     if (stat(m_path.c_str(),&statbuf) == 0)

@@ -1,6 +1,7 @@
 #ifndef _FTP_FILE_H_
 #define _FTP_FILE_H_
 #include "IFile.h"
+#include "ftp_client.h"
 
 class CFtpFile : public IFile
 {
@@ -13,12 +14,13 @@ public:
     virtual bool open();
     virtual int write(const char *data, int dataLen);
     virtual bool close();
-    virtual int size();
+    virtual long size();
     virtual bool clean();
 private:
     std::string m_userName;
     std::string m_passWord;
     std::string m_ftpSerIp;
+    CFTPManager m_ftpManager;
 };
 #endif
 

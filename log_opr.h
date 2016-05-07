@@ -7,7 +7,7 @@
 typedef struct TraceFileInf
 {
 	std::string m_fileName;
-	size_t m_fileSize;
+	long m_fileSize;
 	int m_count;
 	int m_candyCount;
 	int m_traceCount;

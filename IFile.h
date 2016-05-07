@@ -49,7 +49,7 @@ public:
     virtual bool open() = 0;
     virtual int write(const char *data, int dataLen) = 0;
     virtual bool close() = 0;
-    virtual int size() = 0;
+    virtual long size() = 0;
     virtual bool clean() = 0;
     
 protected:

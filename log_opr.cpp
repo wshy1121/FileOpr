@@ -127,7 +127,7 @@ void CLogOprManager::writeFile(TraceInfoId &traceInfoId, char *content)
 	traceFileInf->m_fileSize += strlen(content);
 }
 void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
-{
+{   trace_worker();
 	if (pString->size() == 0)
 	{
 		return ;

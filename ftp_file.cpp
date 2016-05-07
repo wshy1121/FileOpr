@@ -19,11 +19,15 @@ CFtpFile::CFtpFile(IFile::FileKey &fileKey)
     m_path = fileKey.path;
     
     trace_printf("%s  %s  %s  %s", m_userName.c_str(), m_passWord.c_str(), m_ftpSerIp.c_str(), m_path.c_str());
+
+    m_ftpManager.login2Server(m_ftpSerIp.c_str());
+    m_ftpManager.inputUserName(m_userName.c_str());
+    m_ftpManager.inputPassWord(m_passWord.c_str());
 }
 
 CFtpFile::~CFtpFile()
 {   trace_worker();
-
+    m_ftpManager.quitServer();
 }
 
 bool CFtpFile::open()
@@ -33,6 +37,7 @@ bool CFtpFile::open()
 
 int CFtpFile::write(const char *data, int dataLen)
 {   trace_worker();
+    m_ftpManager.WriteData(m_path, data, dataLen);
     return 0;
 }
 
@@ -42,9 +47,9 @@ bool CFtpFile::close()
     return true;
 }
 
-int CFtpFile::size()
+long CFtpFile::size()
 {   trace_worker();
-    return 0;
+    return m_ftpManager.getFileLength(m_path);
 }
 
 bool CFtpFile::clean()
