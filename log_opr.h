@@ -66,8 +66,6 @@ private:
 	void destroyLogFile(LOG_FILE *pLogFile);
 	bool isAvailable();
 	void initTraceFileInf(TraceFileInf *traceFileInf, char *fileName, std::string &clientIpAddr);
-    std::string nowTime();
-    std::string &addAddrTime(std::string &fileName, std::string &clientIpAddr);
 private:
 	static CLogOprManager *_instance;
 	base::CPthreadMutex m_logFileMutex;

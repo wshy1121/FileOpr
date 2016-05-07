@@ -12,10 +12,14 @@ int main()
     trace_printf("NULL");
     ftpManager.inputPassWord("7ujMko0admin");
     trace_printf("NULL");
-    ftpManager.Put("/Log/Makefile", "Makefile");
+    //ftpManager.Put("/Log/Makefile", "Makefile");
 
-    ftpManager.WriteData("/Log/WriteTest.txt", "12345", 5);
+    for (int i=0; i<5; ++i)
+    {
+        ftpManager.WriteData("/Log/WriteTest.txt", "12345\n", 7);
+    }
     trace_printf("NULL");
+    ftpManager.quitServer();
     return 0;
 }
 

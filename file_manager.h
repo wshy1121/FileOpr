@@ -13,7 +13,7 @@ public:
     typedef boost::shared_ptr<boost::thread> WorkThread;    
     typedef std::map<IFile::FileKey, IFileHander> FileMap;
 
-    IFileHander getFileHander(const std::string &path);
+    IFileHander getFileHander(const std::string &path, std::string &clientIpAddr);
     static CFileManager* instance();
 private:
     CFileManager();
@@ -22,6 +22,9 @@ private:
     IFileHander createFileHander(IFile::FileKey &fileKey);
     void cleanHanderThread();
     void dispFileMap();
+    std::string nowTime();
+    std::string &addFileAddr(std::string &fileName, std::string &clientIpAddr);
+    std::string &addFileTime(std::string &fileName);
 private:
     
     static  CFileManager* _instance;

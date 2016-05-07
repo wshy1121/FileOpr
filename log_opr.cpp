@@ -150,9 +150,7 @@ void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
     traceFileInf.m_fileSize = fileAddTime->size();
     if (traceFileInf.m_fileSize > 67108864) //large than 64M
     {
-        std::string fileNameAddTime = logFile->fileName;
-        addAddrTime(fileNameAddTime, logFile->clientIpAddr);
-        traceFileInf.m_fileAddTime = CFileManager::instance()->getFileHander(fileNameAddTime);
+        traceFileInf.m_fileAddTime = CFileManager::instance()->getFileHander(logFile->fileName, logFile->clientIpAddr);
     }
 
 	return ;
@@ -201,14 +199,9 @@ void CLogOprManager::initTraceFileInf(TraceFileInf *traceFileInf, char *fileName
 		traceFileInf->m_fileSize = statbuf.st_size;
 	}
 
-    std::string fileNameAddTime = fileName;
-    addAddrTime(fileNameAddTime, clientIpAddr);
-    traceFileInf->m_fileAddTime = CFileManager::instance()->getFileHander(fileNameAddTime);       
+    traceFileInf->m_fileAddTime = CFileManager::instance()->getFileHander(fileName, clientIpAddr);       
 
-    
-    printf("fileNameAddTime.c_str()  %s\n", fileNameAddTime.c_str());
-	trace_printf("traceFileInf->m_fileSize	%d", traceFileInf->m_fileSize); 
-	return ;	
+    return ;	
 }
 
 void CLogOprManager::getTraceFileList(TraceFileInfMap &traceFileInfMap)
@@ -224,31 +217,4 @@ void CLogOprManager::getTraceFileList(TraceFileInfMap &traceFileInfMap)
     }
 }
 
-std::string CLogOprManager::nowTime()
-{
-    char nowTime[64];
-    time_t now;
-    struct tm  *w;
-    time(&now);  
-    w=localtime(&now);
-    CBase::snprintf(nowTime, sizeof(nowTime), "%04d%02d%02d-%02d%02d%02d",w->tm_year+1900,w->tm_mon+1,w->tm_mday,w->tm_hour,w->tm_min,w->tm_sec);
-    return nowTime;
-}
-
-
-std::string &CLogOprManager::addAddrTime(std::string &fileName, std::string &clientIpAddr)
-{
-    int nameIndex = fileName.find_last_of('/');
-    if (nameIndex > 0)
-    {
-        fileName = fileName.insert(nameIndex, '/' + clientIpAddr);  
-    }
-    nameIndex = fileName.find_last_of('.');
-    if (nameIndex > 0)
-    {
-        fileName = fileName.insert(nameIndex, '_' + nowTime());  
-    }
-    
-    return fileName;
-}
 

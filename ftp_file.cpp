@@ -110,6 +110,7 @@ bool CFtpFile::parseKey(const std::string &path, IFile::FileKey &fileKey)
     fileInfValue["userName"] = userName;
     fileInfValue["passWord"] = passWord;
     fileInfValue["ftpSerIp"] = ftpSerIp;
+    fileInfValue["ftpPath"] = ftpPath;
     
     fileKey.type = e_ftpFile;
     fileKey.serInf = fileInfValue.toStyledString();
