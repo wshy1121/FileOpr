@@ -21,6 +21,7 @@ private:
     bool getFileKey(const std::string &path, IFile::FileKey &fileKey);
     IFileHander createFileHander(IFile::FileKey &fileKey);
     void cleanHanderThread();
+    void checkOnlineThread();
     void dispFileMap();
     std::string nowTime();
     std::string &addFileAddr(std::string &fileName, std::string &clientIpAddr);
@@ -31,6 +32,7 @@ private:
     FileMap m_fileMap;
     boost::mutex m_fileMapMutex;
     WorkThread  m_cleanHanderThread;
+    WorkThread m_checkOnlineThread;
 };
 #endif
 

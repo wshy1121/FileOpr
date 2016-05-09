@@ -23,6 +23,7 @@ CFileManager* CFileManager::instance()
 CFileManager::CFileManager()
 {   trace_worker();
     m_cleanHanderThread = WorkThread(new boost::thread(boost::bind(&CFileManager::cleanHanderThread,this)));
+    m_checkOnlineThread = WorkThread(new boost::thread(boost::bind(&CFileManager::checkOnlineThread,this)));
 }
 
 CFileManager::~CFileManager()
@@ -31,6 +32,12 @@ CFileManager::~CFileManager()
     {
         m_cleanHanderThread->interrupt();
         m_cleanHanderThread->join();
+    }
+
+    if(m_checkOnlineThread != NULL)
+    {
+        m_checkOnlineThread->interrupt();
+        m_checkOnlineThread->join();
     }
 
     {
@@ -155,6 +162,33 @@ void CFileManager::cleanHanderThread()
     
 }
 
+void CFileManager::checkOnlineThread()
+{
+    FileMap::iterator iter; 
+    int sleepTime = 3*1000*1000;
+    while (1)
+    {   trace_worker();
+        boost::this_thread::interruption_point();
+        {
+            boost::unique_lock<boost::mutex> lock(m_fileMapMutex);   
+            for(iter = m_fileMap.begin(); iter!=m_fileMap.end(); ++iter)
+            {
+                IFileHander &fileHander = iter->second;
+                trace_printf("fileHander.use_count  %ld", fileHander.use_count());
+                if (fileHander->isOnline() == false)
+                {   trace_printf("NULL");
+                    m_fileMapMutex.unlock();
+                    fileHander->reConnect();
+                    m_fileMapMutex.lock();
+                }
+            }
+        }
+        
+        CBase::usleep(sleepTime);
+    }
+    
+}
+
 void CFileManager::dispFileMap()
 {   trace_worker();
     boost::unique_lock<boost::mutex> lock(m_fileMapMutex);
@@ -201,5 +235,6 @@ std::string &CFileManager::addFileTime(std::string &fileName)
     
     return fileName;
 }
+
 
 

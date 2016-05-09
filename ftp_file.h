@@ -16,10 +16,13 @@ public:
     virtual bool close();
     virtual long size();
     virtual bool clean();
+    virtual bool isOnline();
+    virtual void reConnect();
 private:
     std::string m_userName;
     std::string m_passWord;
     std::string m_ftpSerIp;
+    bool m_isOnLine;
     CFTPManager m_ftpManager;
 };
 #endif

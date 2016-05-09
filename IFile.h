@@ -51,6 +51,8 @@ public:
     virtual bool close() = 0;
     virtual long size() = 0;
     virtual bool clean() = 0;
+    virtual bool isOnline() = 0;
+    virtual void reConnect() = 0;
     
 protected:
     std::string m_path;

@@ -3,6 +3,7 @@
 #include "Json/json.h"
 
 CFtpFile::CFtpFile(IFile::FileKey &fileKey)
+:m_isOnLine(true)
 {   trace_worker();
     std::string &serInf = fileKey.serInf;
     
@@ -32,11 +33,21 @@ CFtpFile::~CFtpFile()
 
 bool CFtpFile::open()
 {   trace_worker();
+    if (m_isOnLine == false)
+    {   trace_printf("false");
+        return false;
+    }
+
     return true;
 }
 
 int CFtpFile::write(const char *data, int dataLen)
 {   trace_worker();
+    if (m_isOnLine == false)
+    {   trace_printf("false");
+        return -1;
+    }
+
     m_ftpManager.WriteData(m_path, data, dataLen);
     return 0;
 }
@@ -44,17 +55,49 @@ int CFtpFile::write(const char *data, int dataLen)
 
 bool CFtpFile::close()
 {   trace_worker();
+    if (m_isOnLine == false)
+    {   trace_printf("false");
+        return false;
+    }
+
     return true;
 }
 
 long CFtpFile::size()
 {   trace_worker();
+    if (m_isOnLine == false)
+    {   trace_printf("false");
+        return -1;
+    }
+
     return m_ftpManager.getFileLength(m_path);
 }
 
 bool CFtpFile::clean()
 {   trace_worker();
     return true;
+}
+
+bool CFtpFile::isOnline()
+{
+    m_isOnLine = m_ftpManager.isOnline();
+    return m_isOnLine;
+}
+
+void CFtpFile::reConnect()
+{   trace_worker();
+
+    if (m_ftpManager.login2Server(m_ftpSerIp.c_str()) < 0)
+    {   trace_printf("NULL");
+        return ;
+    }
+    
+    if (m_ftpManager.inputUserName(m_userName.c_str()) < 0)
+    {   trace_printf("NULL");
+        return ;
+    }
+
+    m_ftpManager.inputPassWord(m_passWord.c_str());
 }
 
 //huangyuan1:7ujMko0admin@ftp://127.0.0.1/Log/TraceWorkerDebug.cpp
@@ -118,5 +161,6 @@ bool CFtpFile::parseKey(const std::string &path, IFile::FileKey &fileKey)
     trace_printf("fileKey.serInf.c_str()  %s", fileKey.serInf.c_str());
     return true;
 }
+
 
 

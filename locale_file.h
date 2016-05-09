@@ -15,6 +15,8 @@ public:
     virtual bool close();
     virtual long size();
     virtual bool clean();
+    virtual bool isOnline(){return true;}
+    virtual void reConnect(){}
 private:
     FILE *m_fp;
 };
