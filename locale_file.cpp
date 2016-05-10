@@ -74,7 +74,7 @@ bool CLocaleFile::clean()
 bool CLocaleFile::parseKey(const std::string &path, IFile::FileKey &fileKey)
 {   trace_worker();
     fileKey.type = e_localeFile;
-    fileKey.serInf.clear();
+    fileKey.serInf = path;
     fileKey.path = path;
     return true;
 }
