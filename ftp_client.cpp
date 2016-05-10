@@ -529,10 +529,10 @@ FTP_API CFTPManager::Connect(int socketfd, const std::string &serverIP, unsigned
 			else
 			{   trace_printf("NULL");
 				ret = false;
+                perror("connect\n");
 			}
 		}
         trace_printf("NULL");
-        perror("connect\n");
 	}
 	else
 	{	trace("Connect Immediately!!!\n");
