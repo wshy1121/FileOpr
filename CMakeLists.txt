@@ -19,7 +19,7 @@ ENDIF (WIN32)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -g -Wall -fPIC -O0")
 
 LINK_DIRECTORIES(
-  ${PROJECT_SOURCE_DIR}/../../TraceWorker/build
+  ${PROJECT_SOURCE_DIR}/../CosApp/lib
 )
 
 SET(SRC_SRCS
