@@ -166,25 +166,25 @@ void CFileManager::checkOnlineThread()
 {
     FileMap::iterator iter; 
     int sleepTime = 3*1000*1000;
-    IFileHander fileHander;
+    FileMap fileMap;
     while (1)
     {   trace_worker();
         boost::this_thread::interruption_point();
         {
             boost::unique_lock<boost::mutex> lock(m_fileMapMutex);   
-            for(iter = m_fileMap.begin(); iter!=m_fileMap.end(); ++iter)
-            {
-                fileHander = iter->second;
-                trace_printf("fileHander.use_count  %ld", fileHander.use_count());
-                if (fileHander->isOnline() == false)
-                {   trace_printf("NULL");
-                    m_fileMapMutex.unlock();
-                    fileHander->reConnect();
-                    m_fileMapMutex.lock();
-                }
-                fileHander.reset();
+            fileMap = m_fileMap;
+        }
+        
+        for(iter = fileMap.begin(); iter!=fileMap.end(); ++iter)
+        {
+            IFileHander &fileHander = iter->second;
+            trace_printf("fileHander.use_count  %ld", fileHander.use_count());
+            if (fileHander->isOnline() == false)
+            {   trace_printf("NULL");
+                fileHander->reConnect();
             }
         }
+        fileMap.clear();
         
         CBase::usleep(sleepTime);
     }
