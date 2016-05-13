@@ -1,5 +1,6 @@
 #ifndef _FTP_FILE_H_
 #define _FTP_FILE_H_
+#include <boost/thread/mutex.hpp>
 #include "IFile.h"
 #include "ftp_client.h"
 
@@ -23,6 +24,8 @@ private:
     std::string m_passWord;
     std::string m_ftpSerIp;
     bool m_isOnLine;
+
+    boost::mutex m_ftpManagerMutex;
     CFTPManager m_ftpManager;
 };
 #endif

@@ -48,6 +48,7 @@ int CFtpFile::write(const char *data, int dataLen)
         return -1;
     }
 
+    boost::unique_lock<boost::mutex> lock(m_ftpManagerMutex);
     m_ftpManager.WriteData(m_path, data, dataLen);
     return 0;
 }
@@ -70,6 +71,7 @@ long CFtpFile::size()
         return -1;
     }
 
+    boost::unique_lock<boost::mutex> lock(m_ftpManagerMutex);
     return m_ftpManager.getFileLength(m_path);
 }
 
@@ -80,6 +82,7 @@ bool CFtpFile::clean()
 
 bool CFtpFile::isOnline()
 {
+    boost::unique_lock<boost::mutex> lock(m_ftpManagerMutex);
     m_isOnLine = m_ftpManager.isOnline();
     return m_isOnLine;
 }
@@ -87,6 +90,7 @@ bool CFtpFile::isOnline()
 void CFtpFile::reConnect()
 {   trace_worker();
 
+    boost::unique_lock<boost::mutex> lock(m_ftpManagerMutex);
     if (m_ftpManager.login2Server(m_ftpSerIp.c_str()) < 0)
     {   trace_printf("NULL");
         return ;

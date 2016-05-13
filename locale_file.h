@@ -1,5 +1,6 @@
 #ifndef _LOCALE_FILE_H_
 #define _LOCALE_FILE_H_
+#include <boost/thread/mutex.hpp>
 #include "IFile.h"
 
 class CLocaleFile : public IFile
@@ -18,6 +19,7 @@ public:
     virtual bool isOnline(){return true;}
     virtual void reConnect(){}
 private:
+    boost::mutex m_fpMutex;
     FILE *m_fp;
 };
 #endif

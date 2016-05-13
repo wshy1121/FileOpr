@@ -19,7 +19,8 @@ CLocaleFile::~CLocaleFile()
 bool CLocaleFile::open()
 {   trace_worker();
     const char *fileName = m_path.c_str();
-    
+
+    boost::unique_lock<boost::mutex> lock(m_fpMutex);
 	m_fp = base::fopen (fileName, "a+");
 	if (m_fp == NULL)
 	{
@@ -32,12 +33,16 @@ bool CLocaleFile::open()
 
 int CLocaleFile::write(const char *data, int dataLen)
 {   trace_worker();
+
+    boost::unique_lock<boost::mutex> lock(m_fpMutex);
     return fwrite(data, dataLen, 1, m_fp);
 }
 
 
 bool CLocaleFile::close()
 {   trace_worker();
+
+    boost::unique_lock<boost::mutex> lock(m_fpMutex);
     int ret = fclose(m_fp);
     if (ret == 0)
     {        
