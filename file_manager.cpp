@@ -77,6 +77,7 @@ bool CFileManager::getFileKey(const std::string &path, IFile::FileKey &fileKey)
 IFileHander CFileManager::getFileHander(const std::string &path, std::string &clientIpAddr)
 {   trace_worker();
     trace_printf("path.c_str()  %s", path.c_str());
+    IFileHander fileHander;
     std::string filePath = path;
     
     filePath = addFileAddr(filePath, clientIpAddr);
@@ -84,11 +85,10 @@ IFileHander CFileManager::getFileHander(const std::string &path, std::string &cl
     IFile::FileKey fileKey;
     if (getFileKey(filePath, fileKey) == false)
     {   trace_printf("NULL");
-        return NULL;
+        return fileHander;
     }
 
     
-    IFileHander fileHander;
     {
         boost::unique_lock<boost::mutex> lock(m_fileMapMutex);
         
