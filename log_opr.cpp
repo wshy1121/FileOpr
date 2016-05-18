@@ -34,7 +34,7 @@ CLogOprManager *CLogOprManager::instance()
 
 void CLogOprManager::threadProc()
 {	
-	const int sleepTime = 3* 1000 * 1000;
+	const int sleepTime = 4 * 1000 * 1000;
 	LOG_FILE *pLogFile = NULL;
 	while(1)
 	{
@@ -126,6 +126,7 @@ void CLogOprManager::writeFile(TraceInfoId &traceInfoId, char *content)
 	TraceFileInf *&traceFileInf = traceInfoId.clientInf->m_traceFileInf;
 	traceFileInf->m_fileSize += strlen(content);
 }
+
 void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
 {   trace_worker();
 	if (pString->size() == 0)
@@ -142,11 +143,14 @@ void CLogOprManager::toFile(LOG_FILE *logFile, CString *pString)
 	    pString->clear();
 		return ;
 	}
+
+    TraceFileInf &traceFileInf = logFile->traceFileInf;
+    traceFileInf.m_rxbps = pString->size() / 4;
+    
     fileAddTime->write(pString->c_str(), pString->size());
     pString->clear();
 	fileAddTime->close();
 
-	TraceFileInf &traceFileInf = logFile->traceFileInf;
     traceFileInf.m_fileSize = fileAddTime->size();
     if (traceFileInf.m_fileSize > 67108864) //large than 64M
     {
@@ -192,6 +196,7 @@ void CLogOprManager::initTraceFileInf(TraceFileInf *traceFileInf, char *fileName
 	traceFileInf->m_fileSize = 0;
 	traceFileInf->m_candyCount = 0;
 	traceFileInf->m_traceCount = 0;
+    traceFileInf->m_rxbps = 0;
 	
 	struct stat statbuf; 
 	if (stat(fileName,&statbuf) == 0)
