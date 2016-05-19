@@ -35,15 +35,15 @@ CLogOprManager *CLogOprManager::instance()
 void CLogOprManager::threadProc()
 {	
 	const int sleepTime = 4 * 1000 * 1000;
-	CLogFile *pLogFile = NULL;
+	std::shared_ptr<CLogFile> logFile;
 	while(1)
 	{
 		base::usleep(sleepTime);
 		CGuardMutex guardMutex(m_logFileMutex);
 		for (LogFileMap::iterator iter = m_logFileMap.begin(); iter != m_logFileMap.end(); ++iter)
 		{
-			pLogFile = iter->second;
-			toFile(pLogFile, pLogFile->m_content);
+			logFile = iter->second;
+			toFile(logFile.get(), logFile->m_content);
 		}
 	}
 }
@@ -65,10 +65,10 @@ TraceFileInf *CLogOprManager::openFile(int fileKey, char *fileName, std::string 
 		m_logFileMutex.Enter();
 	}
 	printf("openFile  fileKey, fileName  %d  %s\n", fileKey, fileName);
-	CLogFile *pLogFile = new CLogFile(fileName, clientIpAddr);
-	m_logFileMap.insert(std::make_pair(fileKey, pLogFile));
+    std::shared_ptr<CLogFile> logFile(new CLogFile(fileName, clientIpAddr));
+	m_logFileMap.insert(std::make_pair(fileKey, logFile));
 	
-	return &pLogFile->m_traceFileInf;
+	return &logFile->m_traceFileInf;
 }
 
 bool CLogOprManager::closeFile(int fileKey)
@@ -80,12 +80,10 @@ bool CLogOprManager::closeFile(int fileKey)
 	{
 		return false;
 	}
-	CLogFile *pLogFile = iter->second;
-	toFile(pLogFile, pLogFile->m_content);
+	std::shared_ptr<CLogFile> logFile = iter->second;
+	toFile(logFile.get(), logFile->m_content);
 
 	m_logFileMap.erase(iter);
-	
-	delete pLogFile;
 	return true;
 }
 
@@ -121,8 +119,8 @@ void CLogOprManager::writeFile(TraceInfoId &traceInfoId, char *content)
 		printf("writeFile failed! no file opened\n");
 		return ;
 	}
-	CLogFile *pLogFile = iter->second;
-	(pLogFile->m_content)->append(content);
+	std::shared_ptr<CLogFile> logFile = iter->second;
+	(logFile->m_content)->append(content);
 	TraceFileInf *&traceFileInf = traceInfoId.clientInf->m_traceFileInf;
 	traceFileInf->m_fileSize += strlen(content);
 }
@@ -178,7 +176,7 @@ void CLogOprManager::getTraceFileList(TraceFileInfMap &traceFileInfMap)
     LogFileMap::iterator iter = logFileMap.begin();
     for (; iter != logFileMap.end(); ++iter)
     {
-        CLogFile *logFile = iter->second;
+        std::shared_ptr<CLogFile> logFile = iter->second;
         traceFileInfMap[logFile->m_fileName+logFile->m_clientIpAddr] = &logFile->m_traceFileInf;
     }
 }

@@ -59,7 +59,7 @@ class  CLogOprManager
 {
 public:
 	typedef std::map<std::string, TraceFileInf *> TraceFileInfMap;
-	typedef std::map<int, CLogFile*> LogFileMap;	
+	typedef std::map<int, std::shared_ptr<CLogFile>> LogFileMap;	
 	static CLogOprManager *instance();
 	TraceFileInf *openFile(int fileKey, char *fileName, std::string &clientIpAddr);
 	bool closeFile(int fileKey);
