@@ -4,6 +4,8 @@
 #include "mem_calc.h"
 #include "file_manager.h"
 
+class CLogOprManager;
+
 typedef struct TraceFileInf
 {
 	std::string m_fileName;
@@ -38,19 +40,26 @@ typedef struct LOG_DATA
 
 #define logDataContain(ptr)  container_of(ptr, LOG_DATA, node)
 
-typedef struct LOG_FILE
+class CLogFile
 {
-	std::string fileName;
-    std::string clientIpAddr;
-	base::CString *content;
-	TraceFileInf traceFileInf;
+public:
+    friend class CLogOprManager;
+    CLogFile(char *fileName, std::string &clientIpAddr);
+    ~CLogFile();
+private:
+    void initTraceFileInf(TraceFileInf *traceFileInf, char *fileName, std::string &clientIpAddr);
+private:
+	std::string m_fileName;
+    std::string m_clientIpAddr;
+	base::CString *m_content;
+	TraceFileInf m_traceFileInf;
 	
-}LOG_FILE;
+};
 class  CLogOprManager
 {
 public:
 	typedef std::map<std::string, TraceFileInf *> TraceFileInfMap;
-	typedef std::map<int, LOG_FILE*> LogFileMap;	
+	typedef std::map<int, CLogFile*> LogFileMap;	
 	static CLogOprManager *instance();
 	TraceFileInf *openFile(int fileKey, char *fileName, std::string &clientIpAddr);
 	bool closeFile(int fileKey);
@@ -62,11 +71,8 @@ private:
 private:
 	static void* threadFunc(void *pArg);
 	void threadProc();	
-	void toFile(LOG_FILE *logFile, base::CString *pString);
-	LOG_FILE *createLogFile(char *fileName, std::string &clientIpAddr);
-	void destroyLogFile(LOG_FILE *pLogFile);
+	void toFile(CLogFile *logFile, base::CString *pString);
 	bool isAvailable();
-	void initTraceFileInf(TraceFileInf *traceFileInf, char *fileName, std::string &clientIpAddr);
 private:
 	static CLogOprManager *_instance;
 	base::CPthreadMutex m_logFileMutex;
