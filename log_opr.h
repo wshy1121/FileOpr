@@ -9,7 +9,7 @@ class CLogOprManager;
 typedef struct TraceFileInf
 {
 	std::string m_fileName;
-	long m_fileSize;
+	size_t m_fileSize;
 	int m_count;
 	int m_candyCount;
 	int m_traceCount;
